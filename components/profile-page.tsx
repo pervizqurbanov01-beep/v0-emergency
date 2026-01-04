@@ -2,6 +2,7 @@
 
 import { useLanguage } from "@/lib/language-context"
 import { useProfile } from "@/lib/profile-context"
+import { useAuth } from "@/lib/auth-context"
 import { Card, CardContent } from "@/components/ui/card"
 import { User, Phone, Calendar, Heart, Droplet } from "lucide-react"
 import { Label } from "@/components/ui/label"
@@ -14,6 +15,7 @@ import { useState } from "react"
 export function ProfilePage() {
   const { t } = useLanguage()
   const { profile, updateProfile } = useProfile()
+  const { logout } = useAuth()
   const [saveSuccess, setSaveSuccess] = useState(false)
 
   const handleSave = () => {
@@ -223,6 +225,10 @@ export function ProfilePage() {
           }`}
         >
           {saveSuccess ? "✓ " + t.saveProfile : t.saveProfile}
+        </Button>
+
+        <Button onClick={logout} className="w-full bg-gray-700 hover:bg-gray-800 py-6 text-lg font-semibold text-white">
+          {t.logout}
         </Button>
       </div>
     </div>

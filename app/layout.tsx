@@ -6,6 +6,7 @@ import "./globals.css"
 import { LanguageProvider } from "@/lib/language-context"
 import { EmergencyCallsProvider } from "@/lib/emergency-calls-context"
 import { ProfileProvider } from "@/lib/profile-context"
+import { AuthProvider } from "@/lib/auth-context"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -47,11 +48,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans antialiased`}>
-        <LanguageProvider>
-          <EmergencyCallsProvider>
-            <ProfileProvider>{children}</ProfileProvider>
-          </EmergencyCallsProvider>
-        </LanguageProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <EmergencyCallsProvider>
+              <ProfileProvider>{children}</ProfileProvider>
+            </EmergencyCallsProvider>
+          </LanguageProvider>
+        </AuthProvider>
         <Analytics />
       </body>
     </html>

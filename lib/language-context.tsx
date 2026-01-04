@@ -74,12 +74,20 @@ type Translations = {
   emergency: string
   emergencyDescription: string
   saveProfile: string
+  logout: string
   months: Array<{ value: string; label: string }>
   voiceMessage: string
   uploadVoiceMessage: string
   recordMessage: string
   activeCall: string
   reasonDescriptions: Record<string, string>
+  logout: string
+  // Driver Features
+  redirect: string
+  acceptCall: string
+  yes: string
+  // Emergency Service Logo
+  emergencyServiceLogo: string
 }
 
 const translations: Record<Language, Translations> = {
@@ -147,6 +155,7 @@ const translations: Record<Language, Translations> = {
     no: "No",
     yesCancelCall: "Yes, Cancel",
     saveProfile: "Save",
+    logout: "Logout",
     months: [
       { value: "01", label: "January" },
       { value: "02", label: "February" },
@@ -174,6 +183,10 @@ const translations: Record<Language, Translations> = {
       injury: "Physical injury or trauma",
       other: "Other medical emergency",
     },
+    redirect: "Forward",
+    acceptCall: "Accept Call",
+    yes: "Yes",
+    emergencyServiceLogo: "Emergency Service Logo",
   },
   az: {
     emergencyCall: "Ambulans Çağır",
@@ -239,6 +252,7 @@ const translations: Record<Language, Translations> = {
     no: "Xeyr",
     yesCancelCall: "Bəli, Ləğv Et",
     saveProfile: "Yadda Saxla",
+    logout: "Çıxış",
     months: [
       { value: "01", label: "Yanvar" },
       { value: "02", label: "Fevral" },
@@ -266,6 +280,10 @@ const translations: Record<Language, Translations> = {
       injury: "Cəsədi xəsarət və ya travma",
       other: "Digər tibbi ehtiyat vəziyyəti",
     },
+    redirect: "Yönləndir",
+    acceptCall: "Çağrışı Qəbul Et",
+    yes: "Bəli",
+    emergencyServiceLogo: "Təcili Yardım Xidməti Loqosu",
   },
   ru: {
     emergencyCall: "Вызвать Скорую",
@@ -331,6 +349,7 @@ const translations: Record<Language, Translations> = {
     no: "Нет",
     yesCancelCall: "Да, Отменить",
     saveProfile: "Сохранить",
+    logout: "Выйти",
     months: [
       { value: "01", label: "Январь" },
       { value: "02", label: "Февраль" },
@@ -358,6 +377,10 @@ const translations: Record<Language, Translations> = {
       injury: "Физическая травма или повреждение",
       other: "Другая неотложная медицинская ситуация",
     },
+    redirect: "Перенаправить",
+    acceptCall: "Принять Вызов",
+    yes: "Да",
+    emergencyServiceLogo: "Логотип Службы Скорой Помощи",
   },
 }
 

@@ -6,7 +6,7 @@ import { useLanguage } from "@/lib/language-context"
 import { useEmergencyCalls } from "@/lib/emergency-calls-context"
 import { Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { AmbulanceMap } from "@/components/ambulance-map"
+import { MiniMapPreview } from "@/components/mini-map-preview"
 import {
   AlertDialog,
   AlertDialogContent,
@@ -26,10 +26,12 @@ export function TrackingDialog({
   callId: string
 }) {
   const { t } = useLanguage()
-  const { cancelCall } = useEmergencyCalls()
+  const { cancelCall, calls } = useEmergencyCalls()
   const [status, setStatus] = useState<"dispatched" | "en-route" | "arriving" | "arrived">("dispatched")
   const [estimatedTime, setEstimatedTime] = useState(270)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
+
+  const currentCall = calls.find((c) => c.id === callId)
 
   useEffect(() => {
     if (!open) return
@@ -107,7 +109,15 @@ export function TrackingDialog({
           </DialogHeader>
 
           <div className="space-y-6 py-4">
-            <AmbulanceMap status={status} />
+            {currentCall && (
+              <MiniMapPreview
+                location={{
+                  latitude: 40.4093,
+                  longitude: 49.8671,
+                  address: currentCall.location || "Your Location",
+                }}
+              />
+            )}
 
             <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4">
               <div>
