@@ -177,12 +177,12 @@ export function EmergencyRequestDialog({
             <AlertDialogTitle>{t.sendRequest}</AlertDialogTitle>
             <AlertDialogDescription>{t.sendRequestConfirmation}</AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <Button variant="outline" onClick={() => setShowConfirmation(false)}>
+          <AlertDialogFooter className="gap-3">
+            <Button onClick={() => setShowConfirmation(false)} variant="outline" className="flex-1">
               {t.no}
             </Button>
-            <Button onClick={handleConfirmedSubmit} className="bg-red-600 hover:bg-red-700">
-              {t.yesCancelCall}
+            <Button onClick={handleConfirmedSubmit} className="flex-1 bg-red-600 hover:bg-red-700">
+              {t.yes}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
