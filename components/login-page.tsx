@@ -22,6 +22,8 @@ export default function LoginPage() {
     otp: "",
   })
   const [otpSent, setOtpSent] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const translations = {
     en: {
@@ -85,23 +87,61 @@ export default function LoginPage() {
   }
 
   const handleSendOtp = () => {
-    if (formData.phoneNumber && formData.finCode) {
-      setOtpSent(true)
+    if (!formData.phoneNumber || !formData.finCode) {
+      setError("Phone number and FIN code are required")
+      return
     }
+    setError(null)
+    setOtpSent(true)
   }
 
-  const handleVerifyOtp = () => {
-    if (formData.otp) {
-      login("driver", {
+  const handleVerifyOtp = async () => {
+    if (!formData.otp) {
+      setError("OTP code is required")
+      return
+    }
+
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const success = await login("driver", {
         phoneNumber: formData.phoneNumber,
         finCode: formData.finCode,
       })
+
+      if (!success) {
+        setError("Invalid phone number or FIN code. Please try again.")
+        setOtpSent(false)
+      }
+    } catch (err) {
+      console.error("[v0] Login error:", err)
+      setError("Login failed. Please try again.")
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  const handleUserLogin = () => {
-    if (formData.firstName && formData.lastName && formData.phoneNumber && formData.finCode) {
-      login("user", formData)
+  const handleUserLogin = async () => {
+    if (!formData.firstName || !formData.lastName || !formData.phoneNumber || !formData.finCode) {
+      setError("All fields are required")
+      return
+    }
+
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const success = await login("user", formData)
+
+      if (!success) {
+        setError("Login failed. Please check your credentials and try again.")
+      }
+    } catch (err) {
+      console.error("[v0] Login error:", err)
+      setError("An error occurred during login. Please try again.")
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -176,30 +216,52 @@ export default function LoginPage() {
             <CardTitle className="text-red-600">{localT.userLoginTitle}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {error && (
+              <div className="flex items-center gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                <AlertCircle className="h-4 w-4" />
+                {error}
+              </div>
+            )}
             <Input
               placeholder={localT.firstName}
               value={formData.firstName}
               onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+              disabled={isLoading}
             />
             <Input
               placeholder={localT.lastName}
               value={formData.lastName}
               onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+              disabled={isLoading}
             />
             <Input
               placeholder={localT.phoneNumber}
               value={formData.phoneNumber}
               onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+              disabled={isLoading}
             />
             <Input
               placeholder={localT.finCode}
               value={formData.finCode}
               onChange={(e) => setFormData({ ...formData, finCode: e.target.value })}
+              disabled={isLoading}
             />
-            <Button onClick={handleUserLogin} className="w-full bg-red-600 hover:bg-red-700">
-              {localT.login}
+            <Button 
+              onClick={handleUserLogin} 
+              className="w-full bg-red-600 hover:bg-red-700"
+              disabled={isLoading}
+            >
+              {isLoading ? "Logging in..." : localT.login}
             </Button>
-            <Button onClick={() => setStep("selection")} variant="outline" className="w-full">
+            <Button 
+              onClick={() => {
+                setStep("selection")
+                setError(null)
+              }} 
+              variant="outline" 
+              className="w-full"
+              disabled={isLoading}
+            >
               Geri
             </Button>
           </CardContent>
@@ -216,20 +278,32 @@ export default function LoginPage() {
             <CardTitle className="text-red-600">{localT.driverLoginTitle}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {error && (
+              <div className="flex items-center gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                <AlertCircle className="h-4 w-4" />
+                {error}
+              </div>
+            )}
             {!otpSent ? (
               <>
                 <Input
                   placeholder={localT.phoneNumber}
                   value={formData.phoneNumber}
                   onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                  disabled={isLoading}
                 />
                 <Input
                   placeholder={localT.finCode}
                   value={formData.finCode}
                   onChange={(e) => setFormData({ ...formData, finCode: e.target.value })}
+                  disabled={isLoading}
                 />
-                <Button onClick={handleSendOtp} className="w-full bg-red-600 hover:bg-red-700">
-                  {localT.sendOtp}
+                <Button 
+                  onClick={handleSendOtp} 
+                  className="w-full bg-red-600 hover:bg-red-700"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Sending..." : localT.sendOtp}
                 </Button>
               </>
             ) : (
@@ -242,13 +316,39 @@ export default function LoginPage() {
                   placeholder={localT.otp}
                   value={formData.otp}
                   onChange={(e) => setFormData({ ...formData, otp: e.target.value })}
+                  disabled={isLoading}
                 />
-                <Button onClick={handleVerifyOtp} className="w-full bg-red-600 hover:bg-red-700">
-                  {localT.verifyOtp}
+                <Button 
+                  onClick={handleVerifyOtp} 
+                  className="w-full bg-red-600 hover:bg-red-700"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Verifying..." : localT.verifyOtp}
+                </Button>
+                <Button 
+                  onClick={() => {
+                    setOtpSent(false)
+                    setError(null)
+                    setFormData({ ...formData, otp: "" })
+                  }} 
+                  variant="outline" 
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  Yenidən göndər
                 </Button>
               </>
             )}
-            <Button onClick={() => setStep("selection")} variant="outline" className="w-full">
+            <Button 
+              onClick={() => {
+                setStep("selection")
+                setError(null)
+                setOtpSent(false)
+              }} 
+              variant="outline" 
+              className="w-full"
+              disabled={isLoading}
+            >
               Geri
             </Button>
           </CardContent>
