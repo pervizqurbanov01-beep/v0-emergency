@@ -3,12 +3,13 @@
 import type React from "react"
 import { createContext, useContext, useState } from "react"
 import type { User, Driver, UserType } from "@/lib/types"
+import { supabase } from "./supabase"
 
 interface AuthContextType {
   isAuthenticated: boolean
   userType: UserType | null
   user: User | Driver | null
-  login: (userType: UserType, credentials: any) => void
+  login: (userType: UserType, credentials: any) => Promise<boolean>
   logout: () => void
 }
 
@@ -19,26 +20,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userType, setUserType] = useState<UserType | null>(null)
   const [user, setUser] = useState<User | Driver | null>(null)
 
-  const login = (type: UserType, credentials: any) => {
-    setUserType(type)
-    setIsAuthenticated(true)
+  const login = async (type: UserType, credentials: any): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("fin_code", credentials.finCode)
+        .eq("phone_number", credentials.phoneNumber)
+        .eq("user_type", type)
+        .single()
 
-    if (type === "user") {
-      setUser({
-        id: Date.now().toString(),
-        firstName: credentials.firstName,
-        lastName: credentials.lastName,
-        phoneNumber: credentials.phoneNumber,
-        finCode: credentials.finCode,
-        userType: "user",
-      })
-    } else {
-      setUser({
-        id: Date.now().toString(),
-        phoneNumber: credentials.phoneNumber,
-        finCode: credentials.finCode,
-        userType: "driver",
-      })
+      if (error || !data) {
+        console.error("[v0] User not found:", error)
+        return false
+      }
+
+      if (!data.is_active) {
+        console.error("[v0] User account is inactive")
+        return false
+      }
+
+      setUserType(type)
+      setIsAuthenticated(true)
+
+      if (type === "user") {
+        setUser({
+          id: data.id,
+          firstName: data.first_name,
+          lastName: data.last_name,
+          phoneNumber: data.phone_number,
+          finCode: data.fin_code,
+          userType: "user",
+        })
+      } else {
+        setUser({
+          id: data.id,
+          phoneNumber: data.phone_number,
+          finCode: data.fin_code,
+          userType: "driver",
+        })
+      }
+
+      return true
+    } catch (err) {
+      console.error("[v0] Login error:", err)
+      return false
     }
   }
 
