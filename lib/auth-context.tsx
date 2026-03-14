@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .select("*")
         .eq("fin", credentials.finCode)
         .eq("phone_number", credentials.phoneNumber)
-        .eq("user", type)
+        .eq("role", type)
         .single()
 
       if (error || !data) {
