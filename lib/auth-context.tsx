@@ -25,9 +25,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data, error } = await supabase
         .from("users")
         .select("*")
-        .eq("fin_code", credentials.finCode)
+        .eq("fin", credentials.finCode)
         .eq("phone_number", credentials.phoneNumber)
-        .eq("user_type", type)
+        .eq("user", type)
         .single()
 
       if (error || !data) {
